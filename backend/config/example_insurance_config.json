@@ -1,0 +1,125 @@
+{
+  "business_domain": "Insurance / Claims",
+  "organization_name": "Example Insurance Ltd",
+  "active_policy_set": "IRDAI_Compliance_v1.5",
+  "monitored_products": [
+    "Life Insurance",
+    "Health Insurance",
+    "Motor Insurance",
+    "Property Insurance",
+    "Travel Insurance"
+  ],
+  "products": [
+    {
+      "product_name": "Health Insurance",
+      "product_type": "Health Cover",
+      "risk_level": "high",
+      "specific_policies": ["IRDAI-HEALTH-01", "IRDAI-HEALTH-02"]
+    },
+    {
+      "product_name": "Motor Insurance",
+      "product_type": "Vehicle Insurance",
+      "risk_level": "medium",
+      "specific_policies": ["IRDAI-MOTOR-01"]
+    }
+  ],
+  "risk_triggers": [
+    "Claim Denial Without Justification",
+    "Medical Information Misuse",
+    "Unfair Claim Settlement",
+    "Harassment",
+    "Misleading Policy Terms",
+    "Premium Collection Issues",
+    "Documents Tampering",
+    "Delay Tactics"
+  ],
+  "compliance_triggers": [
+    {
+      "trigger_name": "Claim Rejection Concern",
+      "keywords": ["claim denied", "rejected claim", "not covered", "claim rejection"],
+      "severity": "high",
+      "action_required": "Claims review by senior adjuster"
+    },
+    {
+      "trigger_name": "Medical Privacy Breach",
+      "keywords": ["medical records", "health information", "diagnosis", "treatment details"],
+      "severity": "critical",
+      "action_required": "Data protection review immediately"
+    },
+    {
+      "trigger_name": "Settlement Delay",
+      "keywords": ["delayed settlement", "pending claim", "waiting too long", "no response"],
+      "severity": "high",
+      "action_required": "Claims processing acceleration"
+    }
+  ],
+  "custom_rules": [
+    {
+      "rule_id": "INS-001",
+      "rule_name": "Timely Claim Settlement",
+      "description": "All valid claims must be settled within regulatory timelines. Delays must be justified with valid reasons",
+      "severity": "critical",
+      "category": "Claims Management"
+    },
+    {
+      "rule_id": "INS-002",
+      "rule_name": "Medical Data Confidentiality",
+      "description": "Customer medical information must be treated as highly confidential and not disclosed to unauthorized parties",
+      "severity": "critical",
+      "category": "Privacy Protection"
+    },
+    {
+      "rule_id": "INS-003",
+      "rule_name": "Policy Terms Clarity",
+      "description": "All policy terms, exclusions, and conditions must be explained clearly to customers in understandable language",
+      "severity": "high",
+      "category": "Transparency"
+    },
+    {
+      "rule_id": "INS-004",
+      "rule_name": "Fair Denial Communication",
+      "description": "If a claim is denied, specific policy clauses and clear reasons must be communicated with appeal process information",
+      "severity": "high",
+      "category": "Claims Management"
+    }
+  ],
+  "risk_scoring": {
+    "base_threshold": 45,
+    "critical_threshold": 75,
+    "weight_policy_violations": 0.45,
+    "weight_emotional_tone": 0.30,
+    "weight_threat_detection": 0.25
+  },
+  "auto_escalate_on_critical": true,
+  "agent_quality_thresholds": {
+    "minimum_politeness_score": 70,
+    "minimum_empathy_score": 65,
+    "minimum_professionalism_score": 75,
+    "minimum_overall_score": 70
+  },
+  "prohibited_phrases": [
+    "your claim is definitely rejected",
+    "we don't have to pay you",
+    "you're trying to cheat us",
+    "this is insurance fraud",
+    "we will report you to authorities",
+    "you should have read the fine print"
+  ],
+  "allowed_call_hours": {
+    "start": "09:00",
+    "end": "18:00",
+    "timezone": "Asia/Kolkata"
+  },
+  "max_call_attempts_per_day": 2,
+  "notification_settings": {
+    "email_on_critical_violation": true,
+    "email_on_high_risk_score": true,
+    "webhook_enabled": true
+  },
+  "report_recipients": [
+    "compliance@exampleinsurance.com",
+    "claims-head@exampleinsurance.com"
+  ],
+  "config_version": "2.0.0",
+  "notes": "Insurance-specific compliance configuration following IRDAI regulations"
+}

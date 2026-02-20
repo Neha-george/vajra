@@ -1,0 +1,116 @@
+{
+  "business_domain": "Telecommunications",
+  "organization_name": "Example Telecom Corp",
+  "active_policy_set": "TELECOM_Compliance_v1.0",
+  "monitored_products": [
+    "Mobile Postpaid",
+    "Mobile Prepaid",
+    "Broadband",
+    "DTH Service",
+    "Enterprise Solutions"
+  ],
+  "products": [
+    {
+      "product_name": "Mobile Postpaid",
+      "product_type": "Subscription Service",
+      "risk_level": "medium",
+      "specific_policies": ["TRAI-01", "TRAI-02"]
+    },
+    {
+      "product_name": "Broadband",
+      "product_type": "Internet Service",
+      "risk_level": "low",
+      "specific_policies": ["TRAI-03", "TRAI-04"]
+    }
+  ],
+  "risk_triggers": [
+    "Service Termination Threat",
+    "Unauthorized Charges",
+    "Data Privacy Breach",
+    "Harassment",
+    "Misleading Information",
+    "Forced Upselling",
+    "Contract Violation",
+    "Abusive Language"
+  ],
+  "compliance_triggers": [
+    {
+      "trigger_name": "Data Privacy Concern",
+      "keywords": ["personal data", "privacy", "data leak", "unauthorized access"],
+      "severity": "critical",
+      "action_required": "Escalate to Data Protection Officer"
+    },
+    {
+      "trigger_name": "Service Quality Complaint",
+      "keywords": ["network down", "no service", "poor quality", "connection issue"],
+      "severity": "medium",
+      "action_required": "Technical team review required"
+    },
+    {
+      "trigger_name": "Billing Dispute",
+      "keywords": ["wrong bill", "overcharged", "incorrect amount", "billing error"],
+      "severity": "high",
+      "action_required": "Billing department investigation"
+    }
+  ],
+  "custom_rules": [
+    {
+      "rule_id": "TCOM-001",
+      "rule_name": "Transparent Pricing",
+      "description": "All charges, fees, and plan changes must be clearly communicated to customers before implementation",
+      "severity": "high",
+      "category": "Transparency"
+    },
+    {
+      "rule_id": "TCOM-002",
+      "rule_name": "No Forced Upgrades",
+      "description": "Customers cannot be forced to upgrade services or plans without explicit consent",
+      "severity": "medium",
+      "category": "Customer Rights"
+    },
+    {
+      "rule_id": "TCOM-003",
+      "rule_name": "Data Protection Compliance",
+      "description": "All customer data must be handled according to applicable data protection regulations",
+      "severity": "critical",
+      "category": "Data Privacy"
+    }
+  ],
+  "risk_scoring": {
+    "base_threshold": 40,
+    "critical_threshold": 75,
+    "weight_policy_violations": 0.35,
+    "weight_emotional_tone": 0.35,
+    "weight_threat_detection": 0.30
+  },
+  "auto_escalate_on_critical": true,
+  "agent_quality_thresholds": {
+    "minimum_politeness_score": 65,
+    "minimum_empathy_score": 55,
+    "minimum_professionalism_score": 70,
+    "minimum_overall_score": 65
+  },
+  "prohibited_phrases": [
+    "your service will be disconnected immediately",
+    "you will lose your number",
+    "we will blacklist you",
+    "you cannot port to another operator",
+    "this is your last chance"
+  ],
+  "allowed_call_hours": {
+    "start": "09:00",
+    "end": "20:00",
+    "timezone": "Asia/Kolkata"
+  },
+  "max_call_attempts_per_day": 4,
+  "notification_settings": {
+    "email_on_critical_violation": true,
+    "email_on_high_risk_score": true,
+    "webhook_enabled": true
+  },
+  "report_recipients": [
+    "compliance@exampletelecom.com"
+  ],
+  "config_version": "2.0.0",
+  "notes": "Telecom-specific compliance configuration following TRAI guidelines"
+}

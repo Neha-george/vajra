@@ -33,28 +33,28 @@ no markdown, no explanations.
 
 The JSON must have EXACTLY these keys:
 
-{
+{{
   "detected_languages": ["list of languages spoken, e.g. Malayalam, English, Hindi, Tamil, Telugu, Kannada, Bengali, Marathi, Gujarati, Punjabi, Urdu, Odia, Assamese"],
   "transcript_threads": [
-    {
+    {{
       "speaker": "agent" or "customer",
       "message": "exact spoken text, translated to English if not English",
       "timestamp": "MM:SS"
-    }
+    }}
   ],
-  "key_topics": ["4-6 main topics discussed"],
+  "key_topics": ["Comprehensive list of 4-8 main topics/themes discussed. Examples: 'Outstanding loan payment', 'Account fraud report', 'Late fee dispute', 'Payment terms negotiation', 'Customer harassment complaint', 'OTP sharing incident', 'Bank account details verification', 'Unauthorized transaction', 'Collection call timing', 'Interest rate clarification'. Be specific and cover all major discussion points."],
   "entities": [
-    {
-      "text": "entity text",
-      "id": "unique id like amount_01",
-      "type": "CURRENCY | ACCOUNT_TYPE | PRODUCT | PERSON | DATE | LOCATION"
-    }
+    {{
+      "text": "entity text (e.g., '₹5000', 'Credit Card', 'Neha Sharma', 'HDFC Bank', 'March 15th', 'Mumbai')",
+      "id": "unique id like amount_01, person_01, product_01, location_01, date_01",
+      "type": "CURRENCY | ACCOUNT_TYPE | PRODUCT | PERSON | DATE | LOCATION | ORGANIZATION | PHONE_NUMBER | ACCOUNT_NUMBER"
+    }}
   ],
-  "primary_intent": "one-line description of customer's main goal",
-  "root_cause": "one-line description of what caused this call",
+  "primary_intent": "Clear, specific description of the customer's primary goal or objective in this call. Examples: 'To report fraudulent transaction and request refund', 'To dispute late payment charges', 'To request payment extension due to financial hardship', 'To complain about harassment from debt collectors', 'To clarify unclear charges on account'. Be specific about WHAT the customer wants to achieve.",
+  "root_cause": "one-line description of what caused this call or the underlying issue",
   "conversation_about": "short phrase describing the call topic",
-  "category": "call category, e.g. Fraud Complaint / Debt Recovery"
-}
+  "category": "call category, e.g. Fraud Complaint / Debt Recovery / Payment Dispute / Account Query / Harassment Complaint"
+}}
 
 Rules:
 - MUST accurately detect ANY Indian regional language spoken (e.g., Hindi, Tamil, Telugu, Kannada, Malayalam, Marathi, Bengali, Gujarati, Punjabi, Odia, Urdu, Assamese, etc.).
@@ -62,6 +62,9 @@ Rules:
   in transcript_threads but note the original language in `detected_languages`.
 - Be accurate about speaker roles — 'agent' initiates collection talk, 'customer' responds.
 - Detect even partial language switches (code-switching within a sentence, e.g., Hinglish, Tanglish).
+- **KEY_TOPICS ANALYSIS**: Identify ALL major themes, issues, and discussion points. Include: financial matters (amounts, fees, charges), account issues, complaints, requests, concerns raised, policies mentioned, actions discussed. Be thorough - missing a topic is worse than including too many.
+- **ENTITIES EXTRACTION**: Extract ALL relevant entities mentioned: amounts (with currency), product names (Credit Card, Loan, Account), person names, organization names, dates, locations, phone numbers. Be comprehensive.
+- **PRIMARY_INTENT ANALYSIS**: Carefully analyze what the customer is trying to accomplish. Look for action requests, complaints, questions, or concerns. The intent should be actionable and specific.
 - If you cannot detect specific entities, omit them rather than guessing.
 - Timestamps should be approximate based on conversation flow.
 """
@@ -200,8 +203,55 @@ def transcribe_and_analyze(audio_file_path: str, api_key: str) -> dict:
                     "conversation_about", "category"]:
             if key not in result:
                 result[key] = [] if key in ("key_topics", "entities") else "Unknown"
+        
+        # Validate and enrich key_topics
+        topics = result.get("key_topics", [])
+        if not topics or len(topics) == 0:
+            # Try to extract topics from transcript
+            all_text = " ".join(t.get("message", "") for t in result.get("transcript_threads", []))
+            inferred_topics = []
+            # Check for common topics
+            if any(word in all_text.lower() for word in ["fraud", "scam", "cheat"]):
+                inferred_topics.append("Fraud report")
+            if any(word in all_text.lower() for word in ["payment", "pay", "paid", "dues"]):
+                inferred_topics.append("Payment discussion")
+            if any(word in all_text.lower() for word in ["otp", "password", "pin"]):
+                inferred_topics.append("Account security")
+            if any(word in all_text.lower() for word in ["money", "amount", "rupees", "paisa"]):
+                inferred_topics.append("Financial transaction")
+            if any(word in all_text.lower() for word in ["bank", "account"]):
+                inferred_topics.append("Bank account inquiry")
+            
+            result["key_topics"] = inferred_topics if inferred_topics else ["General inquiry"]
+            print(f"[Transcriber] Inferred topics: {result['key_topics']}")
+        
+        # Validate entities
+        entities = result.get("entities", [])
+        if entities:
+            # Ensure all entities have proper structure
+            cleaned_entities = []
+            for i, entity in enumerate(entities):
+                if isinstance(entity, dict) and entity.get("text"):
+                    cleaned_entities.append({
+                        "text": entity.get("text", ""),
+                        "id": entity.get("id", f"entity_{i:02d}"),
+                        "type": entity.get("type", "UNKNOWN")
+                    })
+            result["entities"] = cleaned_entities
+        
+        # Validate primary_intent is meaningful
+        if result.get("primary_intent") in ["Unknown", "", None]:
+            # Try to infer from conversation or key topics
+            topics = result.get("key_topics", [])
+            if topics:
+                result["primary_intent"] = f"To address concerns regarding {', '.join(topics[:2])}"
+            else:
+                result["primary_intent"] = "Customer inquiry requiring attention"
 
         print(f"[Transcriber] Analysis complete. Languages: {result['detected_languages']}")
+        print(f"[Transcriber] Key Topics: {result.get('key_topics', [])}")
+        print(f"[Transcriber] Entities Found: {len(result.get('entities', []))}")
+        print(f"[Transcriber] Primary Intent: {result.get('primary_intent', 'N/A')}")
         return result
 
     except json.JSONDecodeError as exc:

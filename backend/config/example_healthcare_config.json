@@ -1,0 +1,125 @@
+{
+  "business_domain": "Healthcare / Medical Collections",
+  "organization_name": "HealthCare Services Inc",
+  "active_policy_set": "HIPAA_Compliance_v2.0",
+  "monitored_products": [
+    "Hospital Bills",
+    "Medical Procedures",
+    "Diagnostic Services",
+    "Emergency Care",
+    "Specialist Consultations"
+  ],
+  "products": [
+    {
+      "product_name": "Hospital Bills",
+      "product_type": "Medical Services",
+      "risk_level": "high",
+      "specific_policies": ["HIPAA-01", "HIPAA-02"]
+    },
+    {
+      "product_name": "Diagnostic Services",
+      "product_type": "Testing Services",
+      "risk_level": "medium",
+      "specific_policies": ["HIPAA-03"]
+    }
+  ],
+  "risk_triggers": [
+    "Medical Information Disclosure",
+    "HIPAA Violation",
+    "Patient Harrassment",
+    "Unauthorized Contact",
+    "Medical Records Misuse",
+    "Threatening Language",
+    "Privacy Breach",
+    "Discrimination"
+  ],
+  "compliance_triggers": [
+    {
+      "trigger_name": "HIPAA Privacy Violation",
+      "keywords": ["medical condition", "diagnosis", "treatment", "health status", "medical history"],
+      "severity": "critical",
+      "action_required": "Immediate HIPAA compliance review"
+    },
+    {
+      "trigger_name": "Patient Discrimination",
+      "keywords": ["discriminate", "unfair treatment", "bias", "prejudice"],
+      "severity": "critical",
+      "action_required": "Patient rights review and investigation"
+    },
+    {
+      "trigger_name": "Billing Dispute",
+      "keywords": ["wrong bill", "overcharged", "insurance didn't cover", "billing error"],
+      "severity": "medium",
+      "action_required": "Billing department verification"
+    }
+  ],
+  "custom_rules": [
+    {
+      "rule_id": "HC-001",
+      "rule_name": "HIPAA Privacy Compliance",
+      "description": "No patient medical information may be discussed with anyone other than the patient without proper authorization",
+      "severity": "critical",
+      "category": "Privacy Protection"
+    },
+    {
+      "rule_id": "HC-002",
+      "rule_name": "Sensitive Communication",
+      "description": "All collection calls must be handled with exceptional sensitivity and empathy given the medical nature of the debt",
+      "severity": "high",
+      "category": "Patient Care"
+    },
+    {
+      "rule_id": "HC-003",
+      "rule_name": "Financial Assistance Information",
+      "description": "Agents must inform patients of available financial assistance programs and payment plan options",
+      "severity": "medium",
+      "category": "Patient Support"
+    },
+    {
+      "rule_id": "HC-004",
+      "rule_name": "No Threatening Medical Services",
+      "description": "Never threaten to withhold future medical services as a collection tactic",
+      "severity": "critical",
+      "category": "Patient Rights"
+    }
+  ],
+  "risk_scoring": {
+    "base_threshold": 35,
+    "critical_threshold": 70,
+    "weight_policy_violations": 0.50,
+    "weight_emotional_tone": 0.30,
+    "weight_threat_detection": 0.20
+  },
+  "auto_escalate_on_critical": true,
+  "agent_quality_thresholds": {
+    "minimum_politeness_score": 75,
+    "minimum_empathy_score": 70,
+    "minimum_professionalism_score": 80,
+    "minimum_overall_score": 75
+  },
+  "prohibited_phrases": [
+    "we will deny you medical care",
+    "your health information will be shared",
+    "we will tell others about your condition",
+    "you don't deserve treatment",
+    "we will report your medical condition",
+    "no hospital will treat you"
+  ],
+  "allowed_call_hours": {
+    "start": "10:00",
+    "end": "17:00",
+    "timezone": "America/New_York"
+  },
+  "max_call_attempts_per_day": 2,
+  "notification_settings": {
+    "email_on_critical_violation": true,
+    "email_on_high_risk_score": true,
+    "webhook_enabled": true
+  },
+  "report_recipients": [
+    "compliance@healthcare-services.com",
+    "privacy-officer@healthcare-services.com"
+  ],
+  "config_version": "2.0.0",
+  "notes": "Healthcare-specific compliance configuration with strict HIPAA privacy requirements"
+}

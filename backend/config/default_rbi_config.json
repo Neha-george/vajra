@@ -1,7 +1,35 @@
 {
   "business_domain": "Banking / Debt Recovery",
-  "monitored_products": ["Credit Card", "Personal Loan", "Savings Account", "Home Loan"],
+  "organization_name": "RBI Standard Compliance",
   "active_policy_set": "RBI_Compliance_v2.1",
+  "monitored_products": [
+    "Credit Card",
+    "Personal Loan",
+    "Savings Account",
+    "Home Loan",
+    "Auto Loan",
+    "Business Loan"
+  ],
+  "products": [
+    {
+      "product_name": "Credit Card",
+      "product_type": "Credit Facility",
+      "risk_level": "high",
+      "specific_policies": ["RBI-CC-01", "RBI-CC-02", "RBI-CC-03"]
+    },
+    {
+      "product_name": "Personal Loan",
+      "product_type": "Loan",
+      "risk_level": "medium",
+      "specific_policies": ["RBI-LOAN-01", "RBI-LOAN-02"]
+    },
+    {
+      "product_name": "Home Loan",
+      "product_type": "Secured Loan",
+      "risk_level": "low",
+      "specific_policies": ["RBI-LOAN-01", "RBI-LOAN-03"]
+    }
+  ],
   "risk_triggers": [
     "Legal Threats",
     "Harassment",
@@ -14,7 +42,98 @@
     "Police Mention",
     "Coercion",
     "Abusive Language",
-    "Threat"
+    "Threat",
+    "Intimidation",
+    "Blackmail",
+    "Defamation"
   ],
-  "custom_rules": []
+  "compliance_triggers": [
+    {
+      "trigger_name": "Harassment Detected",
+      "keywords": ["harass", "bother", "annoy", "pester", "trouble"],
+      "severity": "critical",
+      "action_required": "Immediate escalation to compliance team"
+    },
+    {
+      "trigger_name": "Legal Threat Made",
+      "keywords": ["jail", "court", "police", "legal action", "arrest"],
+      "severity": "critical",
+      "action_required": "Flag for legal review"
+    },
+    {
+      "trigger_name": "Privacy Violation",
+      "keywords": ["family", "employer", "workplace", "neighbors", "friends"],
+      "severity": "high",
+      "action_required": "Review for privacy policy compliance"
+    },
+    {
+      "trigger_name": "Unauthorized Transaction",
+      "keywords": ["unauthorized", "without permission", "didn't authorize", "fraudulent"],
+      "severity": "high",
+      "action_required": "Fraud investigation required"
+    }
+  ],
+  "custom_rules": [
+    {
+      "rule_id": "RBI-CUST-001",
+      "rule_name": "No Third-Party Disclosure",
+      "description": "Agents must not disclose customer debt information to third parties including family, employers, or neighbors without explicit written consent",
+      "severity": "critical",
+      "category": "Privacy Protection"
+    },
+    {
+      "rule_id": "RBI-CUST-002",
+      "rule_name": "Professional Language Only",
+      "description": "All communication must use respectful, professional language. No abusive, threatening, or demeaning language permitted",
+      "severity": "high",
+      "category": "Agent Conduct"
+    },
+    {
+      "rule_id": "RBI-CUST-003",
+      "rule_name": "Transparent Communication",
+      "description": "Agents must clearly identify themselves, their organization, and the purpose of contact at the beginning of each call",
+      "severity": "medium",
+      "category": "Transparency"
+    }
+  ],
+  "risk_scoring": {
+    "base_threshold": 50,
+    "critical_threshold": 80,
+    "weight_policy_violations": 0.4,
+    "weight_emotional_tone": 0.3,
+    "weight_threat_detection": 0.3
+  },
+  "auto_escalate_on_critical": true,
+  "agent_quality_thresholds": {
+    "minimum_politeness_score": 60,
+    "minimum_empathy_score": 50,
+    "minimum_professionalism_score": 70,
+    "minimum_overall_score": 60
+  },
+  "prohibited_phrases": [
+    "you will go to jail",
+    "we will send someone to your house",
+    "we will tell your family",
+    "we will tell your employer",
+    "you are a criminal",
+    "you are a fraud",
+    "you will be arrested",
+    "legal consequences",
+    "police will come",
+    "court will summon you"
+  ],
+  "allowed_call_hours": {
+    "start": "08:00",
+    "end": "19:00",
+    "timezone": "Asia/Kolkata"
+  },
+  "max_call_attempts_per_day": 3,
+  "notification_settings": {
+    "email_on_critical_violation": true,
+    "email_on_high_risk_score": true,
+    "webhook_enabled": false
+  },
+  "report_recipients": [],
+  "config_version": "2.0.0",
+  "notes": "Enhanced RBI compliance configuration with detailed client context support"
 }
