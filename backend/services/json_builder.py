@@ -201,11 +201,54 @@ def build_output_json(
         else:
             primary_intent = "Customer inquiry or concern requiring assistance"
 
+    # Build intelligence summary - prefer transcription data for conversation details
+    # and use compliance summary only for the overall assessment
+    
+    # Generate conversation summary from transcript if compliance summary is generic/fallback
+    compliance_summary = compliance_result.get("summary", "")
+    is_fallback_summary = (
+        "processing error" in compliance_summary.lower() or 
+        "no summary available" in compliance_summary.lower() or
+        not compliance_summary
+    )
+    
+    if is_fallback_summary and transcription_result.get("transcript_threads"):
+        # Generate summary from transcription data
+        threads = transcription_result["transcript_threads"]
+        conv_about = transcription_result.get("conversation_about", "general discussion")
+        category = transcription_result.get("category", "Customer Service Call")
+        
+        summary = (
+            f"This is a {category.lower()} recording with {len(threads)} conversation turns between an agent and customer. "
+            f"The conversation is about {conv_about}. "
+        )
+        
+        # Add intent and key issues
+        if primary_intent and primary_intent != "Customer inquiry or concern requiring assistance":
+            summary += f"The customer's primary intent is: {primary_intent}. "
+        
+        key_topics = transcription_result.get("key_topics", [])
+        if key_topics and len(key_topics) > 0:
+            summary += f"Key topics discussed include: {', '.join(key_topics[:4])}. "
+        
+        # Add root cause if meaningful
+        root_cause = transcription_result.get("root_cause", "")
+        if root_cause and "unclear" not in root_cause.lower():
+            summary += f"Root cause: {root_cause}. "
+        
+        # Check for compliance flags from compliance_result
+        if not compliance_result.get("is_within_policy", True):
+            violations = compliance_result.get("policy_violations", [])
+            if violations:
+                summary += f"Compliance analysis detected {len(violations)} potential policy violation(s). "
+        
+        summary += "Detailed analysis and risk assessment have been performed."
+    else:
+        summary = compliance_summary if compliance_summary else "No summary available."
+    
     intelligence_summary = {
-        "summary": compliance_result.get("summary", "No summary available."),
-        "category": compliance_result.get(
-            "category", transcription_result.get("category", "Debt Recovery")
-        ),
+        "summary": summary,
+        "category": transcription_result.get("category", compliance_result.get("category", "Debt Recovery")),
         "conversation_about": transcription_result.get("conversation_about", "Debt collection call"),
         "primary_intent": primary_intent,
         "key_topics": transcription_result.get("key_topics", []),

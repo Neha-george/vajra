@@ -261,10 +261,40 @@ def _extract_json(text: str) -> dict:
     return json.loads(text)
 
 
-def _build_fallback_compliance() -> dict:
+def _build_fallback_compliance(transcript_threads=None, acoustic_segments=None) -> dict:
+    """Build fallback compliance result when AI analysis fails."""
+    
+    # Try to generate a basic summary from transcript
+    summary = "Analysis could not be completed due to a processing error. Manual review recommended."
+    category = "Unclassified - Requires Review"
+    
+    if transcript_threads and len(transcript_threads) > 0:
+        # Generate basic summary from transcript
+        agent_msgs = [t.get('message', '') for t in transcript_threads if t.get('speaker', '').lower() == 'agent']
+        customer_msgs = [t.get('message', '') for t in transcript_threads if t.get('speaker', '').lower() == 'customer']
+        
+        if agent_msgs and customer_msgs:
+            summary = (
+                f"This is a call interaction between an agent and customer with {len(transcript_threads)} conversation turns. "
+                f"The conversation involves discussion between the agent and customer. "
+                f"Automated compliance analysis could not be completed. Manual review is recommended to assess policy compliance, "
+                f"emotional tone, and agent conduct."
+            )
+            
+            # Try to infer category from content
+            all_text = ' '.join(agent_msgs + customer_msgs).lower()
+            if 'fraud' in all_text or 'scam' in all_text:
+                category = "Fraud Complaint"
+            elif 'payment' in all_text or 'due' in all_text or 'loan' in all_text:
+                category = "Debt Recovery"
+            elif 'dispute' in all_text or 'charge' in all_text:
+                category = "Payment Dispute"
+            elif 'complaint' in all_text:
+                category = "Customer Complaint"
+    
     return {
-        "summary": "Analysis could not be completed due to a processing error. Manual review recommended.",
-        "category": "Unclassified - Requires Review",
+        "summary": summary,
+        "category": category,
         "overall_sentiment": "Neutral",
         "emotional_tone": "Neutral",
         "tone_progression": ["Neutral"],
@@ -491,7 +521,7 @@ def run_compliance_analysis(
         return result
     except json.JSONDecodeError as exc:
         print(f"[ComplianceEngine] JSON parse error: {exc}")
-        return _build_fallback_compliance()
+        return _build_fallback_compliance(transcript_threads, acoustic_segments)
     except Exception as exc:
         print(f"[ComplianceEngine] ERROR: {exc}")
-        return _build_fallback_compliance()
+        return _build_fallback_compliance(transcript_threads, acoustic_segments)
